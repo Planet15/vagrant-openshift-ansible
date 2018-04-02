@@ -1,4 +1,6 @@
 ---
-import_playbook: openshift/playbooks/prerequisites.yml
-import_playbook: openshift/playbooks/deploy_cluster.yml
+ - name: Install pre-requisite
+   import_playbook: openshift/playbooks/prerequisites.yml
+ - name: Deploy cluster
+   import_playbook: openshift/playbooks/deploy_cluster.yml
 
