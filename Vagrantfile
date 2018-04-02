@@ -5,6 +5,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "centos/7"
   # config.vm.box_check_update = true 
   # config.ssh.private_key_path = File.expand_path('~/.ssh/id_rsa')
+  config.landrush.enabled = true # enabled hostname resolution
 
   config.vm.provider :virtualbox do |vb|
     vb.memory = 512
@@ -13,10 +14,19 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "node1" do |machine|
     machine.vm.network "private_network", ip: "192.168.56.31"
+
+    config.vm.hostname = "oc-node1.lab.local"
+
+    config.landrush.host 'oc-master.lab.local', '192.168.56.30'
+    config.landrush.host 'oc-node2.lab.local', '192.168.56.32'
   end
 
   config.vm.define "node2" do |machine|
     machine.vm.network "private_network", ip: "192.168.56.32"
+    config.vm.hostname = "oc-node2.lab.local"
+
+    config.landrush.host 'oc-master.lab.local', '192.168.56.30'
+    config.landrush.host 'oc-node1.lab.local', '192.168.56.31'
   end
 
   config.vm.define 'controller' do |machine|
@@ -27,15 +37,20 @@ Vagrant.configure("2") do |config|
       vb.cpus = 2
     end
 
-    machine.vm.provision :ansible_local do |ansible|
-      ansible.playbook       = "playbook.yml"
-      ansible.verbose        = true
-      ansible.install        = true
-      ansible.install_mode = "pip"
-      ansible.version = "2.4.3.0"
-      ansible.become = true
-      ansible.limit          = "all" # or only "nodes" group, etc.
-      ansible.inventory_path = "inventory"
-    end
+    config.vm.hostname = "oc-master.lab.local"
+
+    config.landrush.host 'oc-node1.lab.local', '192.168.56.31'
+    config.landrush.host 'oc-node2.lab.local', '192.168.56.32'
+
+    # machine.vm.provision :ansible_local do |ansible|
+    #  ansible.playbook       = "playbook.yml"
+    #  ansible.verbose        = true
+    #  ansible.install        = true
+    #  ansible.install_mode = "pip"
+    #  ansible.version = "2.4.3.0"
+    #  ansible.become = true
+    #  ansible.limit          = "all" # or only "nodes" group, etc.
+    #  ansible.inventory_path = "inventory"
+    # end 
   end
 end
