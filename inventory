@@ -1,6 +1,6 @@
 controller ansible_connection=local
 node1      ansible_ssh_host=192.168.56.31 ansible_ssh_private_key_file=./vagrant/machines/node1/virtualbox/private_key openshift_schedulable=true openshift_node_labels="{'region': 'infra', 'zone': 'default'}
-node2      ansible_ssh_host=192.168.56.32 ansible_ssh_private_key_file=./vagrant/machines/node1/virtualbox/private_key openshift_schedulable=true openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
+node2      ansible_ssh_host=192.168.56.32 ansible_ssh_private_key_file=./vagrant/machines/node2/virtualbox/private_key openshift_schedulable=true openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
 
 [nodes]
 node[1:2]
