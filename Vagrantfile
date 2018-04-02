@@ -4,7 +4,7 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "centos/7"
   # config.vm.box_check_update = true 
-  config.ssh.private_key_path = File.expand_path('~/.ssh/id_rsa')
+  # config.ssh.private_key_path = File.expand_path('~/.ssh/id_rsa')
 
   config.vm.provider :virtualbox do |vb|
     vb.memory = 512
