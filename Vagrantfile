@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
   config.landrush.enabled = true # enabled hostname resolution
 
   config.vm.provider :virtualbox do |vb|
-    vb.memory = 512
+    vb.memory = 1024
     vb.cpus = 1
   end
 
@@ -19,6 +19,12 @@ Vagrant.configure("2") do |config|
 
     config.landrush.host 'oc-master.lab.local', '192.168.56.30'
     config.landrush.host 'oc-node2.lab.local', '192.168.56.32'
+
+    config.vm.provision "shell", inline: <<-EOC
+      sudo sed -i -e "\\#PasswordAuthentication no# s#PasswordAuthentication no#PasswordAuthentication yes#g" /etc/ssh/sshd_config
+      sudo service ssh restart
+    EOC
+
   end
 
   config.vm.define "node2" do |machine|
@@ -27,13 +33,18 @@ Vagrant.configure("2") do |config|
 
     config.landrush.host 'oc-master.lab.local', '192.168.56.30'
     config.landrush.host 'oc-node1.lab.local', '192.168.56.31'
+
+    config.vm.provision "shell", inline: <<-EOC
+      sudo sed -i -e "\\#PasswordAuthentication no# s#PasswordAuthentication no#PasswordAuthentication yes#g" /etc/ssh/sshd_config
+      sudo service ssh restart
+    EOC
   end
 
   config.vm.define 'controller' do |machine|
     machine.vm.network "private_network", ip: "192.168.56.30"
 
     config.vm.provider :virtualbox do |vb|
-      vb.memory = 1024
+      vb.memory = 2048
       vb.cpus = 2
     end
 
@@ -42,15 +53,9 @@ Vagrant.configure("2") do |config|
     config.landrush.host 'oc-node1.lab.local', '192.168.56.31'
     config.landrush.host 'oc-node2.lab.local', '192.168.56.32'
 
-    # machine.vm.provision :ansible_local do |ansible|
-    #  ansible.playbook       = "playbook.yml"
-    #  ansible.verbose        = true
-    #  ansible.install        = true
-    #  ansible.install_mode = "pip"
-    #  ansible.version = "2.4.3.0"
-    #  ansible.become = true
-    #  ansible.limit          = "all" # or only "nodes" group, etc.
-    #  ansible.inventory_path = "inventory"
-    # end 
+    config.vm.provision "shell", inline: <<-EOC
+      sudo sed -i -e "\\#PasswordAuthentication no# s#PasswordAuthentication no#PasswordAuthentication yes#g" /etc/ssh/sshd_config
+      sudo service ssh restart
+    EOC
   end
 end

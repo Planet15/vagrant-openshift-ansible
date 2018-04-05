@@ -1,8 +1,4 @@
 ---
- - hosts: all
-   tasks:
-     - name: Install pre-requisite
-       import_tasks: openshift/playbooks/prerequisites.yml
-     - name: Deploy cluster
-       import_tasks: openshift/playbooks/deploy_cluster.yml
+- import_playbook: openshift/playbooks/prerequisites.yml
+- import_playbook: openshift/playbooks/deploy_cluster.yml
 

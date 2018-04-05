@@ -1,9 +1,16 @@
-controller ansible_connection=local
-node1      ansible_ssh_host=192.168.56.31 ansible_ssh_private_key_file=./vagrant/machines/node1/virtualbox/private_key 
-node2      ansible_ssh_host=192.168.56.32 ansible_ssh_private_key_file=./vagrant/machines/node2/virtualbox/private_key 
+controller ansible_ssh_host=oc-master.lab.local 
+node1      ansible_ssh_host=oc-node1.lab.local  
+node2      ansible_ssh_host=oc-node2.lab.local  
+
+[all:vars]
+ansible_connection=ssh
+ansible_ssh_user=vagrant
+ansible_ssh_pass=vagrant
 
 [nodes]
-node[1:2] openshift_schedulable=true openshift_node_labels="{'region': 'infra', 'zone': 'default'}
+controller openshift_schedulable=false  
+node[1:2] openshift_schedulable=true openshift_node_labels="{'region': 'primary', 'zone': 'default'}"
+
 
 [OSEv3:children]
 masters
@@ -11,19 +18,31 @@ nodes
 etcd
 
 [OSEv3:vars]
+# SSH user, this user should allow ssh based auth without requiring a password
+ansible_ssh_user=vagrant
+
+# If ansible_ssh_user is not root, ansible_become must be set to true
+ansible_become=true
+
 # if your target hosts are Fedora uncomment this
 #ansible_python_interpreter=/usr/bin/python3
 openshift_deployment_type=origin
+
+# uncomment the following to enable htpasswd authentication; defaults to DenyAllPasswordIdentityProvider
+#openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+
 openshift_release=3.7
-osm_cluster_network_cidr=10.128.0.0/14
-openshift_portal_net=172.30.0.0/16
-osm_host_subnet_length=9
+
+#osm_cluster_network_cidr=10.128.0.0/14
+#openshift_portal_net=172.30.0.0/16
+#osm_host_subnet_length=9
+
 # localhost likely doesn't meet the minimum requirements
-openshift_disable_check=disk_availability,memory_availability
+openshift_disable_check=disk_availability,docker_image_availability,memory_availability
 
 [masters]
 controller
 
 [etcd]
-localhost ansible_connection=local
+controller
 
