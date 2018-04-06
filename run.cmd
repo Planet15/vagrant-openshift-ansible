@@ -1,5 +1,5 @@
 # Clone the repo
-git clone https://github.com/openshift/openshift-ansible openshift/
+git clone https://github.com/openshift/openshift-ansible 
 
 # Run playbook all 
 ansible-playbook -i inventory playbook.yml

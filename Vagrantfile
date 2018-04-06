@@ -4,9 +4,26 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "centos/7"
   # config.vm.box_check_update = true 
-  # config.ssh.private_key_path = File.expand_path('~/.ssh/id_rsa')
-  config.landrush.enabled = true # enabled hostname resolution
+  
+  # Enable Password Auth
+  # config.ssh.username = 'vagrant'
+  # config.ssh.password = 'vagrant'
+  config.vm.provision "shell", inline: <<-EOC
+    sudo sed -i -e "\\#PasswordAuthentication no# s#PasswordAuthentication no#PasswordAuthentication yes#g" /etc/ssh/sshd_config
+    sudo service ssh restart
+  EOC
 
+  config.landrush.enabled = true # enabled hostname resolution
+  
+  # Enable own private key
+  # config.ssh.insert_key = false
+  # config.ssh.private_key_path = [ '~/.ssh/id_rsa' ]
+  # config.vm.provision "file", source: '~/.ssh/id_rsa.pub', destination: '~/.ssh/authorized_key'
+  # config.vm.provision "shell", inline: <<-EOC
+  #   sudo sed -i -e "\\#PasswordAuthentication yes# s#PasswordAuthentication yes#PasswordAuthentication no#g" /etc/ssh/sshd_config
+  #   sudo service ssh restart
+  # EOC
+    
   config.vm.provider :virtualbox do |vb|
     vb.memory = 1024
     vb.cpus = 1
@@ -20,11 +37,6 @@ Vagrant.configure("2") do |config|
     config.landrush.host 'oc-master.lab.local', '192.168.56.30'
     config.landrush.host 'oc-node2.lab.local', '192.168.56.32'
 
-    config.vm.provision "shell", inline: <<-EOC
-      sudo sed -i -e "\\#PasswordAuthentication no# s#PasswordAuthentication no#PasswordAuthentication yes#g" /etc/ssh/sshd_config
-      sudo service ssh restart
-    EOC
-
   end
 
   config.vm.define "node2" do |machine|
@@ -33,11 +45,6 @@ Vagrant.configure("2") do |config|
 
     config.landrush.host 'oc-master.lab.local', '192.168.56.30'
     config.landrush.host 'oc-node1.lab.local', '192.168.56.31'
-
-    config.vm.provision "shell", inline: <<-EOC
-      sudo sed -i -e "\\#PasswordAuthentication no# s#PasswordAuthentication no#PasswordAuthentication yes#g" /etc/ssh/sshd_config
-      sudo service ssh restart
-    EOC
   end
 
   config.vm.define 'controller' do |machine|
@@ -52,10 +59,5 @@ Vagrant.configure("2") do |config|
 
     config.landrush.host 'oc-node1.lab.local', '192.168.56.31'
     config.landrush.host 'oc-node2.lab.local', '192.168.56.32'
-
-    config.vm.provision "shell", inline: <<-EOC
-      sudo sed -i -e "\\#PasswordAuthentication no# s#PasswordAuthentication no#PasswordAuthentication yes#g" /etc/ssh/sshd_config
-      sudo service ssh restart
-    EOC
   end
 end

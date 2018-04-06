@@ -1,4 +1,4 @@
 ---
-- import_playbook: openshift/playbooks/prerequisites.yml
-- import_playbook: openshift/playbooks/deploy_cluster.yml
+- import_playbook: ../openshift-ansible/playbooks/prerequisites.yml
+- import_playbook: ../openshift-ansible/playbooks/deploy_cluster.yml
 
