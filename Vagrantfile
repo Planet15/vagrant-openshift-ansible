@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
   # config.ssh.password = 'vagrant'
   config.vm.provision "shell", inline: <<-EOC
     sudo sed -i -e "\\#PasswordAuthentication no# s#PasswordAuthentication no#PasswordAuthentication yes#g" /etc/ssh/sshd_config
-    sudo service ssh restart
+    sudo service sshd restart
   EOC
 
   config.landrush.enabled = true # enabled hostname resolution
@@ -21,7 +21,7 @@ Vagrant.configure("2") do |config|
   # config.vm.provision "file", source: '~/.ssh/id_rsa.pub', destination: '~/.ssh/authorized_key'
   # config.vm.provision "shell", inline: <<-EOC
   #   sudo sed -i -e "\\#PasswordAuthentication yes# s#PasswordAuthentication yes#PasswordAuthentication no#g" /etc/ssh/sshd_config
-  #   sudo service ssh restart
+  #   sudo service sshd restart
   # EOC
     
   config.vm.provider :virtualbox do |vb|
@@ -59,5 +59,23 @@ Vagrant.configure("2") do |config|
 
     config.landrush.host 'oc-node1.lab.local', '192.168.56.31'
     config.landrush.host 'oc-node2.lab.local', '192.168.56.32'
+
+     config.vm.provision "shell", inline: <<-SHELL
+      sudo yum -y install git
+      sudo yum -y install sshpass
+      if [ ! -d /openshift-ansible ] ; then
+        sudo git clone https://github.com/openshift/openshift-ansible.git /openshift-ansible    
+      fi  
+    SHELL
+
+     config.vm.provision :ansible do |ansible|        
+        ansible.limit = "all"
+        ansible.playbook = "playbook.yml"
+        ansible.verbose  = true
+        ansible.become = true
+        ansible.become_user = "vagrant"              
+        ansible.inventory_path = "inventory"
+    end    
   end
+
 end
