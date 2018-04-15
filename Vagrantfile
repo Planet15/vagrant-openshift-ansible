@@ -60,7 +60,7 @@ Vagrant.configure("2") do |config|
     config.landrush.host 'oc-node1.lab.local', '192.168.56.31'
     config.landrush.host 'oc-node2.lab.local', '192.168.56.32'
 
-     config.vm.provision "shell", inline: <<-SHELL
+    config.vm.provision "shell", inline: <<-SHELL
       sudo yum -y install git
       sudo yum -y install sshpass
       if [ ! -d /openshift-ansible ] ; then
