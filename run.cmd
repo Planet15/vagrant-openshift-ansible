@@ -7,3 +7,6 @@ ansible-playbook -i inventory playbook.yml
 # Run individually
 sudo ansible-playbook -i inventory openshift/playbooks/prerequisites.yml
 sudo ansible-playbook -i inventory openshift/playbooks/deploy_cluster.yml
+
+# Uninstall 
+ansible-playbook -i inventory ../openshift-ansible/playbooks/adhoc/uninstall.yml -vv

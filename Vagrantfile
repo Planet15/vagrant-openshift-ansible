@@ -51,8 +51,8 @@ Vagrant.configure("2") do |config|
     machine.vm.network "private_network", ip: "192.168.56.30"
 
     config.vm.provider :virtualbox do |vb|
-      vb.memory = 2048
-      vb.cpus = 2
+      vb.memory = 8192
+      vb.cpus = 4
     end
 
     config.vm.hostname = "oc-master.lab.local"
