@@ -5,16 +5,37 @@ Vagrant.configure("2") do |config|
   config.vm.box = "centos/7"
   # config.vm.box_check_update = true 
   
-  # Enable Password Auth
-  # config.ssh.username = 'vagrant'
-  # config.ssh.password = 'vagrant'
+  # Enable Password Auth  
   config.vm.provision "shell", inline: <<-EOC
     sudo sed -i -e "\\#PasswordAuthentication no# s#PasswordAuthentication no#PasswordAuthentication yes#g" /etc/ssh/sshd_config
     sudo service sshd restart
   EOC
 
-  config.landrush.enabled = true # enabled hostname resolution
+  # Manage Host
+  config.hostmanager.enabled = false
+  config.hostmanager.manage_host = true
+  config.hostmanager.manage_guest = true
   
+  # set host dns
+  config.vm.provider :virtualbox do |vb|
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]      
+  end  
+
+  # Landrush DNS
+  if Vagrant.has_plugin?("landrush")   
+    # config.landrush_ip.auto_install = true
+    config.landrush.enabled = true      
+    config.landrush.tld = "lab.local"
+    config.landrush.guest_redirect_dns = false
+    # config.landrush.host_redirect_dns= false
+    # config.landrush.upstream '127.0.0.1', 53, :tcp
+  end
+  
+  # Cache
+  # if Vagrant.has_plugin?("vagrant-cachier")
+  #   config.cache.scope = :machine
+  # end
+
   # Enable own private key
   # config.ssh.insert_key = false
   # config.ssh.private_key_path = [ '~/.ssh/id_rsa' ]
@@ -25,40 +46,28 @@ Vagrant.configure("2") do |config|
   # EOC
     
   config.vm.provider :virtualbox do |vb|
-    vb.memory = 1024
-    vb.cpus = 1
+      vb.memory = 1024
+      vb.cpus = 1      
   end
 
-  config.vm.define "node1" do |machine|
-    machine.vm.network "private_network", ip: "192.168.56.31"
-
-    config.vm.hostname = "oc-node1.lab.local"
-
-    config.landrush.host 'oc-master.lab.local', '192.168.56.30'
-    config.landrush.host 'oc-node2.lab.local', '192.168.56.32'
-
+  config.vm.define "node1" do |machine|    
+    config.vm.hostname = "oc-node1.lab.local"    
+    machine.vm.network "private_network", ip: "192.168.56.31"    
   end
 
-  config.vm.define "node2" do |machine|
-    machine.vm.network "private_network", ip: "192.168.56.32"
-    config.vm.hostname = "oc-node2.lab.local"
-
-    config.landrush.host 'oc-master.lab.local', '192.168.56.30'
-    config.landrush.host 'oc-node1.lab.local', '192.168.56.31'
+  config.vm.define "node2" do |machine|    
+    config.vm.hostname = "oc-node2.lab.local"       
+    machine.vm.network "private_network", ip: "192.168.56.32"    
   end
 
-  config.vm.define 'controller' do |machine|
+  config.vm.define 'controller' do |machine|    
+    config.vm.hostname = "oc-master.lab.local"     
     machine.vm.network "private_network", ip: "192.168.56.30"
 
     config.vm.provider :virtualbox do |vb|
-      vb.memory = 8192
-      vb.cpus = 4
-    end
-
-    config.vm.hostname = "oc-master.lab.local"
-
-    config.landrush.host 'oc-node1.lab.local', '192.168.56.31'
-    config.landrush.host 'oc-node2.lab.local', '192.168.56.32'
+      vb.memory = 4096
+      vb.cpus = 4    
+    end     
 
     config.vm.provision "shell", inline: <<-SHELL
       sudo yum -y install git
